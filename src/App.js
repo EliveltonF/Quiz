@@ -180,12 +180,9 @@ const App = ({ classes }) => {
     if (mudaTela > i) {
       if (mudaTela == cont) {
         if(dados.length > 0) {
-          console.log(dados!=null) 
-          console.log(dados)
           window.sessionStorage.setItem(`${Nome}`, dados)
         }
         estadoTelaQuiz = 'none'
-        console.log("mudatelamsm")
         setCondicao(0)
         setI(0)
         mudaTela = 0
@@ -200,9 +197,7 @@ const App = ({ classes }) => {
   setTimeout(mudaTelaMsm, 350)
 
   const handleClick = (prop) => {
-    console.log(prop.qtda)
     setCont(prop.qtda)
-    console.log(cont)
     setNome(prop.name)
     setCondicao(1)
 
@@ -215,7 +210,6 @@ const App = ({ classes }) => {
       .catch((err) => {
         console.error("ops! ocorreu um erro " + err);
       });
-    console.log(user)
   }
   function reset() {
     setCondicao(0)
@@ -225,7 +219,6 @@ const App = ({ classes }) => {
 
   function qtda() {
     if (user != null && condicao == 2) {
-      console.log(user)
       if (user.results[i].incorrect_answers[2] == null) {
         estado = 'none'
       }
@@ -236,8 +229,6 @@ const App = ({ classes }) => {
         <button style={{ display: `${estado}` }} className={classes.button} onClick={() => { proximo() }}> {user.results[i].incorrect_answers[1]}</button>,
         <button style={{ display: `${estado}` }} className={classes.button} onClick={() => { proximo() }}> {user.results[i].incorrect_answers[2]}</button>
       ]
-      console.log(botao)
-      console.log('alooooooooooooooooo')
       shuffleArray(botao)
       return (
 
@@ -269,14 +260,11 @@ const App = ({ classes }) => {
 
 
     if (condicao == 1) {
-      console.log('inicial')
       return (
-        console.log('inicial/w'),
 
 
         <div className={classes.startUno}>
           <div className={classes.startDois}>
-            {console.log('aa')}
             <button className={classes.start} onClick={() => { StartQuiz() }}>Start</button>
             <button className={classes.cancel} onClick={() => { reset() }}>Cancel</button>
           </div>
@@ -289,7 +277,6 @@ const App = ({ classes }) => {
 
     function pontos() {
       if (Nome != null) {
-        console.log(Nome)
         var status = localStorage.getItem(`${Nome}`);
         
           return (
