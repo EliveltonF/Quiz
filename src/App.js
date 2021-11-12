@@ -4,6 +4,7 @@ import axios from 'axios';
 import React, { useEffect, useState } from "react";
 import { Formik, Form, Field } from "formik";
 var dados = [];
+var nomes;
 var mudaTela = 0;
 var estadoTelaQuiz = ' ';
 
@@ -69,13 +70,13 @@ const styles = () => ({
     alignItems: "center",
   },
   secundariaQTDA: {
-    border:"1px solid grey",
-    borderRadius:"5px",
+    border: "1px solid grey",
+    borderRadius: "5px",
     width: "50vw",
     height: "50vh",
     background: "white",
     display: "flex",
-    flexDirection:"column",
+    flexDirection: "column",
     justifyContent: "center",
     alignItems: "center",
   },
@@ -115,18 +116,18 @@ const styles = () => ({
   start: {
     width: "100px",
     height: "50px",
-    background:"green",
-    border:"none",
-    margin:"10px",
-    color:"white",
+    background: "green",
+    border: "none",
+    margin: "10px",
+    color: "white",
   },
   cancel: {
     width: "100px",
     height: "50px",
-    background:"red",
-    border:"none",
-    margin:"10px",
-    color:"white",
+    background: "red",
+    border: "none",
+    margin: "10px",
+    color: "white",
 
   }
 
@@ -142,10 +143,9 @@ function shuffleArray(array) {
 }
 
 const App = ({ classes }) => {
-  
-  
+
+
   const [cont, setCont] = useState(1);
-  console.log(`https://opentdb.com/api.php?amount=${cont}`)
   var api = axios.create({
     baseURL: `https://opentdb.com/api.php?amount=${cont}`
   });
@@ -154,6 +154,7 @@ const App = ({ classes }) => {
   const [i, setI] = useState(0);
   const [cor, setCor] = useState();
   const [condicao, setCondicao] = useState(0);
+  const [Nome, setNome] = useState();
   var estado = ' ';
 
   useEffect(() => {
@@ -165,7 +166,6 @@ const App = ({ classes }) => {
       });
   }, []);
 
-  console.log(user, i, cor, condicao)
 
   function salva(prop) {
     setCor('green')
@@ -179,33 +179,42 @@ const App = ({ classes }) => {
   function mudaTelaMsm() {
     if (mudaTela > i) {
       if (mudaTela == cont) {
-        window.sessionStorage.setItem('dados', dados)
+        if(dados.length > 0) {
+          console.log(dados!=null) 
+          console.log(dados)
+          window.sessionStorage.setItem(`${Nome}`, dados)
+        }
         estadoTelaQuiz = 'none'
         console.log("mudatelamsm")
         setCondicao(0)
+        setI(0)
+        mudaTela = 0
+
       }
-      setCor('')
-      setI(i + 1)
+      else {
+        setCor('')
+        setI(i + 1)
+      }
     }
   }
   setTimeout(mudaTelaMsm, 350)
-
 
   const handleClick = (prop) => {
     console.log(prop.qtda)
     setCont(prop.qtda)
     console.log(cont)
+    setNome(prop.name)
     setCondicao(1)
-    
-  } 
+
+  }
   function StartQuiz() {
     setCondicao(2)
     api
-    .get()
-    .then((response) => setUser(response.data))
-    .catch((err) => {
-      console.error("ops! ocorreu um erro " + err);
-    });
+      .get()
+      .then((response) => setUser(response.data))
+      .catch((err) => {
+        console.error("ops! ocorreu um erro " + err);
+      });
     console.log(user)
   }
   function reset() {
@@ -220,13 +229,15 @@ const App = ({ classes }) => {
       if (user.results[i].incorrect_answers[2] == null) {
         estado = 'none'
       }
+      estadoTelaQuiz = ' '
       const botao = [
-        <button className={classes.button} onClick={() => { salva(user.results[i].correct_answer) }}> {user.results[i].correct_answer}</button>,
+        <button className={classes.button} onClick={() => { salva(user.results[i].correct_answer) }}> {'a'+ user.results[i].correct_answer}</button>,
         <button className={classes.button} onClick={() => { proximo() }}> {user.results[i].incorrect_answers[0]}</button>,
         <button style={{ display: `${estado}` }} className={classes.button} onClick={() => { proximo() }}> {user.results[i].incorrect_answers[1]}</button>,
         <button style={{ display: `${estado}` }} className={classes.button} onClick={() => { proximo() }}> {user.results[i].incorrect_answers[2]}</button>
       ]
-      botao.sort();
+      console.log(botao)
+      console.log('alooooooooooooooooo')
       shuffleArray(botao)
       return (
 
@@ -243,14 +254,14 @@ const App = ({ classes }) => {
               botao
 
             }
-            <p>{i+1}</p>
+            <p>{i + 1}</p>
             <div style={{ backgroundColor: `${cor}` }} className={classes.cor}></div>
 
           </div>
         </div>
 
       )
-      
+
     }
     estado = ''
 
@@ -261,13 +272,13 @@ const App = ({ classes }) => {
       console.log('inicial')
       return (
         console.log('inicial/w'),
-        
+
 
         <div className={classes.startUno}>
           <div className={classes.startDois}>
             {console.log('aa')}
-              <button className={classes.start} onClick={() => {StartQuiz()}}>Start</button>
-              <button className={classes.cancel} onClick={() => {reset()}}>Cancel</button>
+            <button className={classes.start} onClick={() => { StartQuiz() }}>Start</button>
+            <button className={classes.cancel} onClick={() => { reset() }}>Cancel</button>
           </div>
         </div>
 
@@ -276,19 +287,38 @@ const App = ({ classes }) => {
       )
     }
 
+    function pontos() {
+      if (Nome != null) {
+        console.log(Nome)
+        var status = localStorage.getItem(`${Nome}`);
+        
+          return (
+            <p>{typeof(window.sessionStorage.getItem(`${Nome}`))}</p>,
+            <p>{status}</p>,
+            <p>a  </p>
+          )
+        
+      }
+    }
     if (condicao == 0) {
       return (
         <div className={classes.principalQTDA}>
           <div className={classes.secundariaQTDA}>
-          <h1>Informe quantas questoes quer responder</h1>
+            <h1>Informe quantas questoes quer responder</h1>
             <Formik initialValues={{}} onSubmit={handleClick} >
               <Form className="cadastro-form" >
+                <div className="cadastro-form-group">
+                  <Field name="name" className={classes.formField} pattern="[a-z\s]+$" placeholder="Name" />
+                </div>
                 <div className="cadastro-form-group">
                   <Field name="qtda" className={classes.formField} pattern="[0-50]+" placeholder="Quantas perguntas" />
                 </div>
                 <button className={classes.buttonForm} type="submit">Cadastrar</button>
               </Form>
             </Formik>
+
+            {
+            }
           </div>
         </div>
       )
